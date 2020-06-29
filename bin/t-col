@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+[ $# -ge 1 -a -f "$2" ] && input="$2" || input="-"
+
+usage() {
+    local command="t-col"
+    cat << EOS
+
+Usage:
+    ${command} <options> [filename] [params]
+
+Options:
+    --file  specify file
+    --sep   specify file sepearator
+
+Examples:
+    Output the specify col of file:
+        ${command} --file filename 1 3 2 4
+
+    Output the specify col of file with sepearator
+        ${command} --file filename --sep , 1 2 5
+
+    Get input from pipe line, use - as stdin 
+        cat a.txt | ${command} --file - --sep , 1 2 4
+
+EOS
+}
+
+col() {
+    if [[ $filename = "-" ]]; then
+        cat "$filename" | awk -F"$sep" -v indx="${paths[*]}" 'BEGIN{ split(indx, a, " "); len=length(a)} { for(i=1; i<=len; i++) {printf $(a[i])" "}; printf "\n"}'
+    else
+        awk -F"$sep" -v indx="${paths[*]}" 'BEGIN{ split(indx, a, " "); len=length(a)} { for(i=1; i<=len; i++) {printf $(a[i])" "}; printf "\n"}' "$filename"
+    fi
+}
+
+declare -a paths=()
+while [[ $# -ge 1 ]]; do
+    case "$1" in
+        --file)
+            shift
+            filename="$1"
+            ;;
+        --sep)
+            shift
+            sep="$1"
+            ;;
+        --*)
+            usage
+            exit 1
+            ;;
+        *)
+            paths+=("$1")
+            ;;
+    esac
+    shift
+done
+
+col
+

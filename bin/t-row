@@ -7,7 +7,7 @@ function usage() {
     cat << EOS
 
 Usage:
-    ${command} <odd|even|line|range> [params] [filename]
+    ${command} <odd|even|line|range|delwhiteline> [filename] [params]
 
 Examples:
     Output the odd row of file:
